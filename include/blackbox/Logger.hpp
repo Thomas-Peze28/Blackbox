@@ -20,11 +20,19 @@
 #include <thread>
 #include <utility>
 
+#include <unistd.h>
+
 namespace blackbox
 {
     class Logger
     {
     public:
+        struct LogEntry
+        {
+            LogLevel level;
+            std::string text;
+        };
+
         /**
         * @brief Get the singleton instance of the Logger.
         * @return The singleton instance of the Logger.
@@ -87,7 +95,7 @@ namespace blackbox
                 << "[" << file << ":" << line << "] "
                 << msg;
 
-            _queue.push(oss.str());
+            _queue.push(LogEntry {level, oss.str()});
         }
 
     private:
@@ -111,13 +119,42 @@ namespace blackbox
                 if (!entry.has_value())
                     break;
 
-                std::cout << *entry << std::endl;
+                if (isatty(STDOUT_FILENO))
+                    std::cout << colorForLevel(entry->level) << entry->text << "\033[0m" << std::endl;
+                else
+                    std::cout << entry->text << std::endl;
                 if (_file.is_open())
-                    _file << *entry << std::endl;
+                    _file << entry->text << std::endl;
             }
         }
 
-        SafeQueue<std::string> _queue;
+        /**
+        * @brief Get the color code for a given log level.
+        * @param level The log level.
+        * @return The color code as a C-string.
+        **/
+        const char *colorForLevel(LogLevel level)
+        {
+            switch (level)
+            {
+            case LogLevel::TRACE:
+                return "\033[90m";
+            case LogLevel::DEBUG:
+                return "\033[36m";
+            case LogLevel::INFO:
+                return "\033[32m";
+            case LogLevel::WARN:
+                return "\033[33m";
+            case LogLevel::ERROR:
+                return "\033[31m";
+            case LogLevel::FATAL:
+                return "\033[35m";
+            default:
+                return "";
+            }
+        }
+
+        SafeQueue<LogEntry> _queue;
         LogLevel _minLevel {LogLevel::INFO};
         std::ofstream _file;
         std::thread _worker;
