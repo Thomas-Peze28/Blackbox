@@ -99,6 +99,9 @@ namespace blackbox
         Logger(const Logger &) = delete;
         Logger &operator=(const Logger &) = delete;
 
+        /**
+        * @brief The worker loop for processing log entries.
+        **/
         void workerLoop()
         {
             while (true)
@@ -121,6 +124,11 @@ namespace blackbox
     };
 }
 
+/**
+* @brief Logging macros for different log levels.
+* @param level The log level.
+* @param stream_msg The message to log, can be a stream expression.
+**/
 #define LOG(level, stream_msg) \
     do { \
         std::ostringstream _oss_macro; \
