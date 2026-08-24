@@ -15,6 +15,7 @@
 #include <fstream>
 #include <iomanip>
 #include <iostream>
+#include <filesystem>
 #include <sstream>
 #include <string>
 #include <thread>
@@ -53,7 +54,12 @@ namespace blackbox
         {
             _minLevel = minLevel;
             if (!filepath.empty())
+            {
+                auto parentDir = std::filesystem::path(filepath).parent_path();
+                if (!parentDir.empty())
+                    std::filesystem::create_directories(parentDir);
                 _file.open(filepath, std::ios::out | std::ios::app);
+            }
             _running = true;
             _worker = std::thread(&Logger::workerLoop, this);
         }

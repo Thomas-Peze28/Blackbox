@@ -12,7 +12,7 @@
 
 int main()
 {
-    blackbox::Logger::instance().init("blackbox.log", blackbox::LogLevel::TRACE);
+    blackbox::Logger::instance().init("log/blackbox.log", blackbox::LogLevel::TRACE);
 
     LOG_INFO("Programme principal lance");
     LOG_TRACE("Trace de debug : valeur x = " << 42);
