@@ -25,12 +25,21 @@ namespace blackbox
     class Logger
     {
     public:
+        /**
+        * @brief Get the singleton instance of the Logger.
+        * @return The singleton instance of the Logger.
+        **/
         static Logger &instance()
         {
             static Logger logger;
             return logger;
         }
 
+        /**
+        * @brief Initialize the logger.
+        * @param filepath The path to the log file.
+        * @param minLevel The minimum log level.
+        **/
         void init(const std::string &filepath = "", LogLevel minLevel = LogLevel::INFO)
         {
             _minLevel = minLevel;
@@ -40,6 +49,9 @@ namespace blackbox
             _worker = std::thread(&Logger::workerLoop, this);
         }
 
+        /**
+        * @brief Stop the logger.
+        **/
         void stop()
         {
             if (!_running)
@@ -52,6 +64,13 @@ namespace blackbox
                 _file.close();
         }
 
+        /**
+        * @brief Log a message.
+        * @param level The log level.
+        * @param file The file name.
+        * @param line The line number.
+        * @param msg The message to log.
+        **/
         void log(LogLevel level, const std::string &file, int line, const std::string &msg)
         {
             if (level < _minLevel)
@@ -95,10 +114,10 @@ namespace blackbox
         }
 
         SafeQueue<std::string> _queue;
-        LogLevel _minLevel{LogLevel::INFO};
+        LogLevel _minLevel {LogLevel::INFO};
         std::ofstream _file;
         std::thread _worker;
-        bool _running{false};
+        bool _running {false};
     };
 }
 
