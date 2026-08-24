@@ -32,6 +32,7 @@ namespace blackbox
         static Logger &instance()
         {
             static Logger logger;
+    
             return logger;
         }
 
